@@ -10,7 +10,7 @@ where to route it to.  The inspecting server proxy buffers the first
 few packets of the connection to help it make its decision.  It then
 initiates the proxied connection and forwards the buffered packets.
 
-![StreamProx Overview](streamprox-overview.png)
+![StreamProx Overview](streamprox-overview.png?raw=true)
 
 
 # Why did I write this? #
