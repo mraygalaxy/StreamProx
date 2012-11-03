@@ -11,8 +11,9 @@ from twisted.internet import protocol
 from twisted.internet import reactor
 from twisted.python import log
 
+# StreamProx components
 from packet_buffer import PacketBuffer
-from router import BaseRouter
+from dispatcher import BaseDispatcher
 
 # A proxy forwards data written to it to its peer transport.
 
@@ -36,8 +37,8 @@ class Proxy(protocol.Protocol):
 
     def dataReceived(self, data):
         if self.debug:
-            log.msg("<<< %s proxying:%d" % (self, len(data)))
-            # log.msg("<<< %s" % data)
+            log.msg("<<< %s proxying %d bytes" % (self, len(data)))
+            # log.msg("<<< %s" % repr(data))
         self.peer.transport.write(data)
 
 
@@ -55,8 +56,9 @@ class ProxyClient(Proxy):
         self.peer.setPeer(self)
 
 
-# A replaying proxy client has also been initialized with buffer data
-# to be shoved into the peer when the connection is made.
+# In addition to its peer, a replaying proxy client has had buffer
+# data sent to it, which is to be shoved into the peer when the
+# connection is made.
 
 class ReplayingProxyClient(ProxyClient):
 
@@ -147,15 +149,15 @@ class ReplayingProxyClientFactory(protocol.ClientFactory):
         self.peerInWaiting.transport.loseConnection()
 
 
-class BufferingProxyServer(Proxy):
+# This proxy server examines the first few packets it receives and
+# then makes a decision about which client to hand the conversation
+# off to.
 
-    """This proxy server examines the first few packets it receives
-    and then makes a decision about which client to hand the
-    conversation off to."""
+class BufferingProxyServer(Proxy):
 
     debug = True
     buffer_factory = PacketBuffer
-    router_factory = BaseRouter
+    dispatcher_factory = BaseDispatcher
 
     def connectionMade(self):
         addr = self.transport.getPeer()
@@ -165,15 +167,15 @@ class BufferingProxyServer(Proxy):
         # set initial buffering state
         self.pbuf = self.buffer_factory()
         self.copyMode = False   # after we buffer, we enter copyMode
-        self.router = None
+        self.dispatcher = None
 
     # The proxy server buffers some amount of data, and then
     # asks the transport to pause while it sets up a client.
 
     def dataReceived(self, data):
         if self.debug:
-            log.msg(">>> %s proxying %d" % (self, len(data)))
-            # log.msg(">>> %s" % data)
+            log.msg(">>> %s proxying %d bytes" % (self, len(data)))
+            # log.msg(">>> %s" % repr(data))
 
         if self.copyMode:
             # copy mode occurs after the packet buffer is done examining the head
@@ -186,11 +188,11 @@ class BufferingProxyServer(Proxy):
                 self.copyMode = True
                 self.transport.pauseProducing()
 
-                # Initialize a router with the packets received so far
-                self.router = self.router_factory(self.pbuf.bufdata)
+                # Initialize a dispatcher with the packets received so far
+                self.dispatcher = self.dispatcher_factory(self.pbuf.bufdata)
 
-                # Ask the router how to proceed
-                if self.router.isLocal():
+                # Ask the dipatcher how to proceed
+                if self.dispatcher.isLocal():
                     self.proceed_as_protocol_wrapper()
                 else:
                     self.proceed_as_forwarder()
@@ -202,12 +204,15 @@ class BufferingProxyServer(Proxy):
 
     def proceed_as_protocol_wrapper(self):
         # look up the factory that this connection should go to
-        f = self.router.localFactory()
+        f = self.dispatcher.localFactory()
 
         if f == None:
             log.msg("Cannot connect to local factory:%s" % f)
             self.transport.loseConnection()
             return
+        else:
+            if self.debug:
+                log.msg("Connecting to local factory:%s" % f)
 
         # construct a protocol instance
         addr = self.transport.getPeer()
@@ -218,7 +223,7 @@ class BufferingProxyServer(Proxy):
         p.makeConnection(self.transport) # TOM: this is basically "p.transport = self.transport"
 
         # replay buffered data into the protocol instance, then resume with our producer
-        self.replay_and_continue(p, 0, self.router.outgoingData())
+        self.replay_and_continue(p, 0, self.dispatcher.outgoingData())
 
     # The desired location is a remote (out-of-process) socket.  Set
     # up a clientFactory that creates a ReplayingProxyClient connected
@@ -228,10 +233,10 @@ class BufferingProxyServer(Proxy):
         # create a client proxy. It will create the protocol and replay the data
         self.client = ReplayingProxyClientFactory()
         self.client.setPeerInWaiting(self)
-        self.client.setBufdataInWaiting(self.router.outgoingData())
+        self.client.setBufdataInWaiting(self.dispatcher.outgoingData())
 
         # connect the client to the remote service.  The bufdata will be replayed upon connect.
-        success = self.router.connectClient(self.client)
+        success = self.dispatcher.connectClient(self.client)
 
         if not success:
             self.transport.loseConnection()
@@ -245,11 +250,8 @@ class BufferingProxyServer(Proxy):
         if index < len(bufdata):
             p.dataReceived(bufdata[index])
             reactor.callLater(0.0, self.replay_and_continue, p, index+1, bufdata)
-            # self.replay_and_continue(p, index+1, bufdata)
 
         else:
-            # TOM: 2012-09-07: unnecessary
-            # self.transport.registerProducer(p.transport, True)
             self.transport.resumeProducing()
 
 

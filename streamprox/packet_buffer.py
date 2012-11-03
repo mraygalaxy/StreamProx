@@ -4,12 +4,12 @@
 #
 ################################################################
 
-# The packet buffer stores, examines, and optionally re-writes itself
-# prior to forwarding.  If too many packets are received, or the
-# examination length is exceeded, an exception is thrown upon
-# appending.
+# The packet buffer stores and examines arriving data packet.  If too
+# many packets are received, or the examination length is exceeded,
+# the packet buffer simply reports that it is done buffering.
 #
-# Methods that parse the Packet Buffer ...
+# This implementation is straightforward, but not necessarily
+# efficient.
 
 from twisted.python import log
 import re
@@ -51,9 +51,10 @@ class PacketBuffer:
 
         # see if we've encountered the delimiter
         data = "".join(self.bufdata)
-        if data.find(self.delimiter) != -1:
+        pos = data.find(self.delimiter) 
+        if pos != -1:
             if self.debug:
-                log.msg("found delimiter")
+                log.msg("found delimiter:%d" % pos)
             return True
         else:
             return False
