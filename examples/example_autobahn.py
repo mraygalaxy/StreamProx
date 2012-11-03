@@ -11,7 +11,6 @@ from twisted.internet import reactor
 from twisted.internet.protocol import Protocol, Factory
 from twisted.web import server, resource
 from twisted.python import log
-from twisted.python.filepath import FilePath
 
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
