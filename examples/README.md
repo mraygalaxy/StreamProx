@@ -22,9 +22,9 @@ starts with "/google" is connected to google.
 Using CURL, you can verify that the three different sites are
 dispatched to as you expect.
 
-    curl -u tom:tom http://localhost:8080/foo
-    curl http://localhost:8080/bar
-    curl http://localhost:8080/google/blech
+    % curl -u tom:tom http://localhost:8080/foo
+    % curl http://localhost:8080/bar
+    % curl http://localhost:8080/google/blech
     
 Using a web-browser you can observe some interesting effects.  If you access
 the URL "http://localhost:8080/foo", you will be challenged to enter
