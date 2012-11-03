@@ -1,4 +1,4 @@
 StreamProx
 ==========
 
-Streaming Inspecting Reverse Proxy
+Streaming Inspecting Reverse Proxy in Twisted
