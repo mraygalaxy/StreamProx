@@ -14,3 +14,14 @@ StreamProx lets you organize a website as a collection of Protocol and
 Client handlers, some of which are local, and some of which may be
 remote. 
 
+
+# Getting Started #
+
+Read a short introduction to what StreamProx can do here.
+
+* [Introduction](StreamProx/doc/introduction.md)
+
+Read about the demonstration programs here.
+
+* [Demos](StreamProx/demo/README.md)
+
