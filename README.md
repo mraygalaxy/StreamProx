@@ -11,7 +11,7 @@ first few packets of the connection to help it make its decision.  It
 then initiates the proxied connection and forwards the buffered
 packets.
 
-![StreamProx Overview](/doc/streamprox-local.png?raw=true)
+![StreamProx Overview](streamprox-local.png?raw=true)
 
 
 # Why did I write this? #
@@ -52,7 +52,7 @@ connection be forwarded to an out-of-process server?
   the packets back and forth between the original client and
   destination until the connections are closed.
   
-![StreamProx Overview](/doc/streamprox-remote.png?raw=true)
+![StreamProx Overview](streamprox-remote.png?raw=true)
 
 # Websockets #
 
