@@ -17,11 +17,8 @@ remote.
 
 # Getting Started #
 
-Read a short introduction to what StreamProx can do here.
+* Read a short introduction to what StreamProx can do in doc/introduction.md.
 
-* [Introduction](StreamProx/doc/introduction.md)
+* Read about the example programs in demo/README.md.
 
-Read about the demonstration programs here.
-
-* [Demos](StreamProx/demo/README.md)
 
