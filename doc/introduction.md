@@ -1,16 +1,17 @@
 
-Streaming Server Proxy components in Twisted
+Streaming Inspecting Server Proxy in Twisted
 ============================================
 
 
 StreamProx is a little toolkit for building server proxies in Twisted.
-A server proxy is a piece of software that accepts an incoming
-connection, examines the traffic on it and makes a decision about
-where to route it.  The inspecting server proxy buffers the first few
-packets of the connection to help it make its decision.  It then
-initiates the proxied connection and forwards the buffered packets.
+A server proxy (reverse proxy) is a piece of software that accepts an
+incoming connection, examines the traffic on it and makes a decision
+about where to route it.  The inspecting server proxy buffers the
+first few packets of the connection to help it make its decision.  It
+then initiates the proxied connection and forwards the buffered
+packets.
 
-![StreamProx Overview](streamprox-overview.png?raw=true)
+![StreamProx Overview](streamprox-local.png?raw=true)
 
 
 # Why did I write this? #
@@ -21,8 +22,8 @@ changing quickly and were not necessarily stable.  I wanted to
 construct a web site out of the proven Twisted Resource and Site
 components for rendering the traditional parts of the site, and wanted
 to mount the streaming parts on their own protocol handlers.  I wanted
-everything to run off of port 80.  I wanted the result to avoid
-copying buffered data as much as possible.
+everything to run off of port 80.  I wanted the code to copy data only
+as much as necessary.
 
 I didn't find anything that did what I wanted.
 
@@ -51,6 +52,7 @@ connection be forwarded to an out-of-process server?
   the packets back and forth between the original client and
   destination until the connections are closed.
   
+![StreamProx Overview](streamprox-remote.png?raw=true)
 
 # Websockets #
 
@@ -64,14 +66,14 @@ space.
 
 # Inspirations #
   
-Twisted ships with two standard examples or components that are
-related to this project.
+Twisted ships with two standard components that are related to this
+project.
 
 - PortForward listens on a local port for an incoming connection and
   connects it to a remote service.  It does not examine the contents
   of the packets, nor does it make a make a dispatching decision
   amongst multiple destinations.
-  
+
 - Twisted.web.proxy has a number of components for forward and reverse
   proxying of HTTP requests.  As of this writing, I do not believe
   these components can bi-directionally proxy streaming protocols.
