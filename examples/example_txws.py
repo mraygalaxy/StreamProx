@@ -27,7 +27,7 @@ from twisted.python.filepath import FilePath
 
 from streamprox.proxy import BufferingProxyFactory
 from streamprox.packet_buffer import PacketBuffer
-from streamprox.router import ExampleRouter
+from streamprox.dispatcher import ExampleDispatcher
 
 
 PAGETEXT = """
@@ -157,14 +157,14 @@ if __name__ == '__main__':
     factory.protocol.buffer_factory = PacketBuffer
 
     # Route /demo urls to our website
-    ExampleRouter.prefix1 = "/demo"
-    ExampleRouter.site1 = site
+    ExampleDispatcher.prefix1 = "/demo"
+    ExampleDispatcher.site1 = site
 
     # Route /demowebsocket urls to the websocket handler
-    ExampleRouter.prefix2 = "/websocketdemo"
-    ExampleRouter.site2 = ws
+    ExampleDispatcher.prefix2 = "/websocketdemo"
+    ExampleDispatcher.site2 = ws
 
-    factory.protocol.router_factory = ExampleRouter
+    factory.protocol.dispatcher_factory = ExampleDispatcher
 
     reactor.listenTCP(8080, factory)
     reactor.run()
