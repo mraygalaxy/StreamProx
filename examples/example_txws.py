@@ -1,18 +1,10 @@
-# I'm going to try to build a websocket server for simple stupid data
+################################################################
 #
-# 12-14-2011: finally a websocket demo in Twisted.
-# A fixed subdirectory of images (images/*.jpg) is rendered one-per-second
-# over a websocket along with a timestamp
+# StreamProx
 #
-# 10-31-2012: copied file "git/txWS/tom2.py" to StreamProx and began to modify.
-# It formerly mounted a resource on 8082 and a websocket on 8080.  Lets see
-# if they can both live on the same port.
+# Stream a series of JPG images over a websocket to a client.
 #
-# 10-31-2012: this basically worked!  And it seems to have some
-# beneficial properties.  The browser opens up two persisitent
-# connections: one for the http: scheme, and another for the ws:
-# scheme.
-# 
+################################################################
 
 import sys
 import time
@@ -81,7 +73,7 @@ window.onload = main;
 
 """
 
-class TomResource(resource.Resource):
+class DemoResource(resource.Resource):
 
     def render_GET(self, request):
 
@@ -89,7 +81,7 @@ class TomResource(resource.Resource):
         return PAGETEXT
 
 
-class TomProtocol(Protocol):
+class JPGPipeProtocol(Protocol):
 
     debug = True
 
@@ -136,10 +128,10 @@ class TomProtocol(Protocol):
         emit(i)
 
 
-class TomFactory(Factory):
+class JPGPipeFactory(Factory):
 
     def __init__(self):
-        self.protocol = TomProtocol
+        self.protocol = JPGPipeProtocol
 
 
 
@@ -147,10 +139,10 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
 
     from txws import WebSocketFactory
-    ws = WebSocketFactory(TomFactory())
+    ws = WebSocketFactory(JPGPipeFactory())
 
     root = resource.Resource()
-    root.putChild("demo", TomResource())
+    root.putChild("demo", DemoResource())
     site = server.Site(root)
 
     factory = BufferingProxyFactory()
