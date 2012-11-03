@@ -1,4 +1,3 @@
-
 Inspecting Reverse Proxy Components in Twisted
 ============================================
 
@@ -12,6 +11,6 @@ then initiates the proxied connection and forwards the buffered
 packets.
 
 StreamProx lets you organize a website as a collection of Protocol and
-Client handlers, some of which are local, and somo of which may be
+Client handlers, some of which are local, and some of which may be
 remote. 
 
