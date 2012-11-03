@@ -19,11 +19,10 @@ remote.
 
 * Read a short introduction to what StreamProx can do in ```doc/introduction.md```.
 
-<<<<<<< HEAD
 * Read about the example programs in ```demo/README.md```.
 
 
-# Related *
+# Related #
 
 * Erlang [Ranch](https://github.com/extend/ranch) and [Cowboy](https://github.com/extend/cowboy).
 
