@@ -142,14 +142,14 @@ if __name__ == '__main__':
 
     # Construct our proxy and configure it
     factory = BufferingProxyFactory()
-    factory.protocol.buffer_factory = PacketBuffer
+    factory.buffer_factory = PacketBuffer
 
     # Route /demo urls to our local website
     ExampleDispatcher.prefix1 = "/demo"
     ExampleDispatcher.site1 = site
 
     # Install our custom dispatcher to connect to the remote WebSocket server
-    factory.protocol.dispatcher_factory = RewritingExampleDispatcher
+    factory.dispatcher_factory = RewritingExampleDispatcher
 
     reactor.listenTCP(8080, factory)
     reactor.run()

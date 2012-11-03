@@ -98,14 +98,16 @@ def main():
     bar_root = resource.Resource()
     bar_root.putChild("bar", BarResource())
 
+    # Create two web sites
     site1 = server.Site(protected_foo_root)
     site2 = server.Site(bar_root)
 
+    # Create a StreamProx server.  Customize its packet buffer and dispatcher.
     factory = BufferingProxyFactory()
-    factory.protocol.buffer_factory = PacketBuffer
+    factory.buffer_factory = PacketBuffer
     ExampleDispatcher.site1 = site1
     ExampleDispatcher.site2 = site2
-    factory.protocol.dispatcher_factory = ExampleDispatcher
+    factory.dispatcher_factory = ExampleDispatcher
 
     reactor.listenTCP(8080, factory)
     

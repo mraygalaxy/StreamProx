@@ -146,7 +146,7 @@ if __name__ == '__main__':
     site = server.Site(root)
 
     factory = BufferingProxyFactory()
-    factory.protocol.buffer_factory = PacketBuffer
+    factory.buffer_factory = PacketBuffer
 
     # Route /demo urls to our website
     ExampleDispatcher.prefix1 = "/demo"
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     ExampleDispatcher.prefix2 = "/websocketdemo"
     ExampleDispatcher.site2 = ws
 
-    factory.protocol.dispatcher_factory = ExampleDispatcher
+    factory.dispatcher_factory = ExampleDispatcher
 
     reactor.listenTCP(8080, factory)
     reactor.run()

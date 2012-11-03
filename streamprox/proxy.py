@@ -156,8 +156,6 @@ class ReplayingProxyClientFactory(protocol.ClientFactory):
 class BufferingProxyServer(Proxy):
 
     debug = True
-    buffer_factory = PacketBuffer
-    dispatcher_factory = BaseDispatcher
 
     def connectionMade(self):
         addr = self.transport.getPeer()
@@ -165,7 +163,7 @@ class BufferingProxyServer(Proxy):
             log.msg("%s connectionMade from %s" % (self, addr))
 
         # set initial buffering state
-        self.pbuf = self.buffer_factory()
+        self.pbuf = self.factory.buffer_factory()
         self.copyMode = False   # after we buffer, we enter copyMode
         self.dispatcher = None
 
@@ -189,7 +187,7 @@ class BufferingProxyServer(Proxy):
                 self.transport.pauseProducing()
 
                 # Initialize a dispatcher with the packets received so far
-                self.dispatcher = self.dispatcher_factory(self.pbuf.bufdata)
+                self.dispatcher = self.factory.dispatcher_factory(self.pbuf.bufdata)
 
                 # Ask the dipatcher how to proceed
                 if self.dispatcher.isLocal():
@@ -259,5 +257,7 @@ class BufferingProxyFactory(protocol.Factory):
     """Factory for port forwarder."""
 
     protocol = BufferingProxyServer
+    buffer_factory = PacketBuffer               # customize this for packet buffering policies
+    dispatcher_factory = BaseDispatcher         # customize this for dispatching policies
 
 
