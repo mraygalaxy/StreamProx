@@ -11,5 +11,5 @@ except:
 
 
 import packet_buffer
-import router
+import dispatcher
 import proxy
